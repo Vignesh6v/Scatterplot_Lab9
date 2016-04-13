@@ -1,0 +1,21 @@
+{
+  "name": "file1",
+  "authors": [
+    "vignesh6v <vignesh.6v@gmail.com>"
+  ],
+  "description": "bower init",
+  "main": "bfile",
+  "license": "MIT",
+  "homepage": "",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "jQuery": "^2.2.3",
+    "d3": "^3.5.16"
+  }
+}
