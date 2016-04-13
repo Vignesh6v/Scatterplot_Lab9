@@ -13,4 +13,4 @@ box
 
 The output for the following program is be shown
 
-![Alt text](https://github.com/Vignesh6v/Scatterplot_Lab9/Image.png "Scatter Plot with tooltips")
+![Alt text](https://github.com/Vignesh6v/Scatterplot_Lab9/master/Image.png "Scatter Plot with tooltips")
