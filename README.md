@@ -9,3 +9,8 @@ plotted	as	x-axis	and	y-axis.
 * After	the	“Query	MPG”	button	is	pressed,	the	visualization	is	updated	to	render	
 only	those	 cars	with	MPG	in	the	range	defined	 by	the	mpg-min,	mpg-max	input	
 box
+
+
+The output for the following program is be shown
+
+![Alt text](https://github.com/Vignesh6v/Scatterplot_Lab9/image.png "Scatter Plot with tooltips")
