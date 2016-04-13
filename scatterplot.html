@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<head>
+  <script src="http://d3js.org/d3.v3.min.js"></script>
+  <link rel="stylesheet" type="text/css" href="style.css"/>
+  <title> ScatterPlot </title>
+</head>    
+
+<body>
+
+
+<script>
+
+var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+  
+var x = d3.scale.linear()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+
+var color = d3.scale.category10();
+
+
+var axisNames = { 
+                    mpg: 'MPG', 
+                    cylinders: 'Cylinders', 
+                    displacement: 'Displacement', 
+                    horsepower: 'Horsepower',
+                    weight: 'Weight', 
+                    acceleration: 'Acceleration', 
+                    modelyear: 'Model year',  
+                };
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left")
+    .ticks(10);
+
+var tooltip = d3.select("body").append("div")
+    .attr("class", "tooltip")
+    .style("opacity", 0);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+
+d3.csv("car.csv", function(error, data) {
+  data.forEach(function(d) {
+    d.mpg = +d.mpg;
+    d.displacement = +d.displacement;
+    d.cylinders = +d.cylinders;
+    d.horsepower = +d.horsepower;
+    d.weight = +d.weight;
+    d.acceleration = +d.acceleration;
+    d.modelyear = +d["model.year"];
+  });
+
+
+  x.domain([0, d3.max(data,function(d){ return d.displacement; })]);
+  y.domain(d3.extent(data, function(d) { return d.mpg; })).nice();
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("x", width)
+      .attr("y", -6)
+      .style("text-anchor", "end")
+      .text("Displacement");
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("class", "label")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("MPG")
+
+ var circles = svg.selectAll(".dot")
+      .data(data)
+    .enter().append("circle")
+      .attr("class", "dot")
+      .attr("r", 3.5)
+      .attr("cx", function(d) { return x(d.displacement); })
+      .attr("cy", function(d) { return y(d.mpg); })
+      .style("fill", function(d) { return color(d.species); })
+      .on("mouseover", function(d) {
+          tooltip.transition()
+               .duration(200)
+               .style("opacity", .9);
+          tooltip.html('<h4>'+ d["name"] + '</h4>')
+               .style("left", (d3.event.pageX + 5) + "px")
+               .style("top", (d3.event.pageY - 28) + "px");
+      })
+      .on("mouseout", function(d) {
+          tooltip.transition()
+               .duration(500)
+               .style("opacity", 0)
+      });
+
+
+
+  d3.selectAll("[name=query]").on("click", function() {
+      var lowerlimit = document.getElementById('mpg-min').value
+      var upperlimit = document.getElementById('mpg-max').value
+      display = "none"
+
+  svg.selectAll(".dot")
+      .filter(function(d) {return d.mpg;})
+      .attr("display", "inline")
+  if (upperlimit != ''){
+  svg.selectAll(".dot")
+      .filter(function(d) {return d.mpg > upperlimit ;})
+      .attr("display", display);
+  }
+  if (lowerlimit != ''){
+  svg.selectAll(".dot")
+      .filter(function(d) {return d.mpg < lowerlimit ;})
+      .attr("display", display); 
+  }
+  });
+
+  d3.select("[name=xAX]").on("change", function(){
+    xAxy = this.value;
+    console.log(xAxy)
+    x.domain(d3.extent(data, function(d) { return d[xAxy]; })).nice();
+
+    svg.select(".x.axis").transition().call(xAxis);
+    svg.selectAll(".dot").transition().attr("cx", function(d) { 
+        return x(d[xAxy]);
+    });
+    svg.selectAll(".x.axis").selectAll("text.label").text(axisNames[xAxy]);
+  });
+
+  d3.select("[name=yAX]").on("change", function(){
+    yAxy = this.value;
+    console.log(yAxy)
+    y.domain(d3.extent(data, function(d) { return d[yAxy]; })).nice();
+    svg.select(".y.axis").transition().call(yAxis);
+    svg.selectAll(".dot").transition().attr("cy", function(d) { 
+        return y(d[yAxy]);
+    });
+    svg.selectAll(".y.axis").selectAll("text.label").text(axisNames[yAxy]);
+  });
+
+});
+
+</script>
+<br><br>
+
+<div class="ui">
+  <div>
+    <label>X-Axis</label>
+    <select name="xAX" id="xAXs">
+      <option value="displacement">Displacement</option>
+      <option value="mpg">mpg</option>
+      <option value="cylinders">Cylinders</option>
+      <option value="horsepower">Horsepower</option>
+      <option value="weight">Weight</option>
+      <option value="acceleration">Acceleration</option>
+      <option value="modelyear">Model Year</option>
+  </select>
+
+    <label>Y-Axis</label>
+    <select name="yAX" id="yAXs">
+      <option value="mpg">mpg</option>
+      <option value="displacement">Displacement</option>
+      <option value="cylinders">Cylinders</option>
+      <option value="horsepower">Horsepower</option>
+      <option value="weight">Weight</option>
+      <option value="acceleration">Acceleration</option>
+      <option value="modelyear">Model Year</option>
+    </select>
+  </div>
+  <div id= "filter">
+    <input id="mpg-min" type="text" value="" size="10">
+    <input id="mpg-max" type="text" value="" size="10">
+    <button id="update" name ="query">Query MPG</button>
+  </div>
+</div>
+  <br>
+</body>
